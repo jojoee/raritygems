@@ -1,188 +1,121 @@
-import math
-from Crypto.Hash import keccak
-from eth_abi.packed import encode_abi_packed
+import subprocess
 import random
-import time
-from web3 import Web3
-import requests
-import datetime
-from typing import Dict, List
-import sys
-
-from helper.config import ETH_GEM_ABI, FTM_GEM_ABI
-from helper.notification import Notification
+from time import sleep
+import traceback
+from web3 import Web3, contract
+from helper.config import FTM_GEM_ABI
+from helper.notification import line
 
 
 class Miner:
     # required
-    user_address: str = ''
-    chain: str = ''
+    user_address: str
     gem_kind: int
-    infura_api_key: str = ""  # ETH required
-
-    # optional
-    private_key: str = ''
+    private_key: str
     line_token: str
-    name: str = ''
 
     # internal
-    w3: Web3 = None
-    notification: Notification = None
+    w3: Web3
+    gem_contract: contract.Contract
 
     # internal (chain)
-    chain_id: int = 0
-    gem_address: str = ''  # e.g. "0x1234"
-    gem_abi: str = ""
-    provider_url: str = ""
-
-    # internal (updated)
-    user_nonce: int = 0
-    gem_entropy: int = 0
-    gem_difficulty: int = 0
-    gem_target: int = 0
-    avg_iteration_per_sec: float = 0
-
-    # path: str = ''  # log path
-    # file_logger = None
-    # console_logger = None
+    chain_id: int = 250
+    gem_address: str = "0x342EbF0A5ceC4404CcFF73a40f9c30288Fc72611"  # contract address
+    gem_abi: str = FTM_GEM_ABI
+    provider_url: str = 'https://rpc.ftm.tools'
 
     def __init__(
             self,
             user_address: str,
             private_key: str,
-            chain: str,  # 'eth' or 'ftm',
             gem_kind: int,
-            line_token: str = None,
-            infura_api_key: str = None
+            line_token: str,
+            salt_finder_path: str,
     ):
-        if chain == 'eth':
-            self.chain_id = 1
-            self.gem_address = "0xC67DED0eC78b849e17771b2E8a7e303B4dAd6dD4"
-            self.gem_abi = ETH_GEM_ABI
-            self.infura_api_key = infura_api_key
-            self.provider_url = f'https://mainnet.infura.io/v3/{self.infura_api_key}'
-
-        elif chain == 'ftm':
-            self.chain_id = 250
-            self.gem_address = "0x342EbF0A5ceC4404CcFF73a40f9c30288Fc72611"
-            self.gem_abi = FTM_GEM_ABI
-            self.provider_url = 'https://rpc.ftm.tools'
-        else:
-            # TODO: print something
-            sys.exit()
-
+        # user provided
         self.user_address = user_address
-        self.private_key = private_key
-        self.w3: Web3 = Web3(Web3.HTTPProvider(self.provider_url))
-        self.chain = chain
-        self.gem_contract = self.w3.eth.contract(
-            address=self.gem_address,
-            abi=self.gem_abi
-        )
         self.gem_kind = gem_kind
+        self.private_key = private_key
         self.line_token = line_token
+        self.salt_finder_path = salt_finder_path
 
-        # internal
-        if line_token is not None:
-            self.notification = Notification(line_token=self.line_token)
-
-    def update_data(self):
-
-        # get
-        name, color, entropy, difficulty, \
-        gems_per_mine, multiplier, crafter, \
-        manager, pending_manager = self.gem_contract.functions.gems(self.gem_kind).call()
-        nonce = self.gem_contract.functions.nonce(self.user_address).call()
-
-        # assign
-        self.gem_difficulty = difficulty
-        self.user_nonce = nonce
-        self.gem_target = 2 ** 256 / self.gem_difficulty
-        self.gem_entropy = int.from_bytes(entropy, byteorder='big')
-
-    def get_debug(self):
-        msg = """gem_kind: %s\ngem_difficulty: %s\ngem_target: %s\ngem_entropy: %s\nuser_address: %s\nuser_nonce: %s
-        """ % (
-            self.gem_kind,
-            self.gem_difficulty,
-            self.gem_target,
-            self.gem_entropy,
-            self.user_address,
-            self.user_nonce,
-        )
-        return msg
+        # init
+        self.w3: Web3 = Web3(Web3.HTTPProvider(self.provider_url))
+        self.gem_contract = self.w3.eth.contract(address=self.gem_address, abi=self.gem_abi)
 
     def sign_transaction(self, salt):
-        # TODO: optimize gas price
-        transaction = self.gem_contract.functions.mine(self.gem_kind, salt).buildTransaction({
+        td = {
             "chainId": self.chain_id,
             "from": self.user_address,
             'gasPrice': self.w3.eth.gasPrice,
             "gas": 100000,  # TODO: config gas limit
-            'nonce': self.user_nonce,
-        })
-        signed_tx = self.w3.eth.account.sign_transaction(transaction, self.private_key)
-        ticket = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
-        res = self.w3.eth.wait_for_transaction_receipt(ticket)
+            'nonce': self.w3.eth.get_transaction_count(self.user_address),
+        }
+        print('building transaction %s' % str(td))
+        transaction = self.gem_contract.functions.mine(self.gem_kind, salt).buildTransaction(td)
+        print('sign transaction')
+        signed_tx = self.w3.eth.account.sign_transaction(transaction, private_key=self.private_key)
+        tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        tx_receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
         print('transaction', transaction)
-        print('res', res)
+        print('txn_hash', tx_hash)
+        print('tx_receipt', tx_receipt)
 
     def mine(self):
-        # init
-        self.update_data()
-        msg = self.get_debug()
+        msg = '🕒 Start mining'
         print(msg)
 
-        i: int = 0
-        st: float = time.time()
-        self.notification.line("🕒 Starting gem mining..." + msg)
-
-        salt = 0
         while True:
-            i += 1
-
-            # check
-            salt: int = random.randint(1, 2 ** 256)
-            packed: bytes = encode_abi_packed(
-                ['uint256', 'uint256', 'address', 'address', 'uint', 'uint', 'uint'],
-                (self.chain_id, self.gem_entropy, self.gem_address, self.user_address, self.gem_kind, self.user_nonce,
-                 salt,)
-            )
-            k = keccak.new(digest_bits=256)
-            k.update(packed)
-            hx: str = k.hexdigest()
-            ix: int = int(hx, base=16)
-
-            # validate
-            if ix < self.gem_target:
-                print(i)
-                msg = self.get_debug()
+            try:
+                # arrange
+                salt = random.randint(1, 2 ** 256)
+                gem_difficulty = self.gem_contract.functions.gems(self.gem_kind).call()[3]
+                user_nonce = self.gem_contract.functions.nonce(self.user_address).call()
+                d = {
+                    'gem_kind': self.gem_kind,
+                    'gem_difficulty': gem_difficulty,
+                    'user_address': self.user_address,
+                    'user_nonce': user_nonce,
+                    'salt': salt,
+                }
+                msg = '\n========================\n' + \
+                      '💡start next loop %s' % str(d)
                 print(msg)
+                line(self.line_token, msg)
 
-                msg2 = "\nsalt: %d" % salt
-                self.notification.line("🎉 Gem found" + msg + msg2)
+                # act
+                res = subprocess.check_output([
+                    self.salt_finder_path,
+                    '-nonce', str(user_nonce),
+                    '-diff', str(gem_difficulty),
+                    '-address', self.user_address,
+                    '-kind', str(self.gem_kind),
+                    '-salt', str(salt),  # starter salt
+                ], universal_newlines=True, stderr=subprocess.STDOUT)
+                print("res", res)
 
-                """
-                TODO recheck
-                user_nonce and gem_difficulty before sign transaction for parallel processing
-                """
-                self.sign_transaction(salt)
-                self.update_data()
-
-            # debug
-            # TODO: make ti config
-            if i % 5000 == 0:
-                avg_iteration_per_sec = math.floor(i / (time.time() - st))
-                n_hrs = self.gem_difficulty / (
-                        avg_iteration_per_sec * 60 * 60) if avg_iteration_per_sec > 0 else 0
-                print("iter %d, %.2f avg iter per sec, it will take %.2f hrs to crack a salt" % (
-                    i,
-                    avg_iteration_per_sec,
-                    n_hrs
-                ))
-
-            # TODO: make it config
-            if i % 1200000 == 0:
-                self.update_data()
-                msg = self.get_debug()
+                # sign
+                target_salt = int(res[:-1])
+                d['salt'] = target_salt
+                msg = '🎉 Gem found %s' % str(d)
+                line(self.line_token, msg)
                 print(msg)
+                self.sign_transaction(target_salt)
+
+                # TODO: get tx status before go next loop (success or fail)
+                print('you are tired for mint one sleep for 16 secs')
+                sleep(16)  # sleep 16 second before get new loop
+
+            except Exception as e:
+                line(self.line_token, '🔥🔥🔥🔥🔥🔥🔥🔥\n ERROR %s' % str(e))
+                print('An exception occurred: {}'.format(e))
+
+                print('traceback.print_exc()')
+                traceback.print_exc()
+
+                print('traceback.format_exc()')
+                fes = traceback.format_exc()
+                print(fes)
+
+                print('error then go sleep for 16 secs')
+                sleep(16)
