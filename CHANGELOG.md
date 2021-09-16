@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2021-09-16)
+### Feature
+* **autosign:** Display tx when claim a gem ([`1d5b249`](https://github.com/jojoee/raritygems/commit/1d5b24901bfab3c7142ed483abe90fe3ccd2ea4e))
+
 ## v0.2.1 (2021-09-16)
 ### Fix
 * **helper:** ModuleNotFoundError: No module named 'helper' ([`c5c4c9f`](https://github.com/jojoee/raritygems/commit/c5c4c9f89608bd8dd26d2da127518a3944d93638))
