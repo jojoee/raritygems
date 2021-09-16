@@ -3,6 +3,9 @@ import datetime
 
 
 def line(line_token: str, txt: str) -> None:
+    if not line_token:
+        return
+
     try:
         url = "https://notify-api.line.me/api/notify"
         header = {
