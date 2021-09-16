@@ -21,6 +21,7 @@ class Miner:
     # internal (chain)
     chain_id: int = 250
     gem_address: str = "0x342EbF0A5ceC4404CcFF73a40f9c30288Fc72611"  # contract address
+    gem_entropy: str = "0x000080440000047163a56455ac4bc6b1f1b88efadf17db76e5c52c0ca594fd9b"
     gem_abi: str = FTM_GEM_ABI
     provider_url: str = 'https://rpc.ftm.tools'
 
@@ -69,8 +70,8 @@ class Miner:
             try:
                 # arrange
                 salt = random.randint(1, 2 ** 256)
-                gem_difficulty = self.gem_contract.functions.gems(self.gem_kind).call()[3]
-                user_nonce = self.gem_contract.functions.nonce(self.user_address).call()
+                gem_difficulty: int = self.gem_contract.functions.gems(self.gem_kind).call()[3]
+                user_nonce: int = self.gem_contract.functions.nonce(self.user_address).call()
                 d = {
                     'gem_kind': self.gem_kind,
                     'gem_difficulty': gem_difficulty,
@@ -86,10 +87,13 @@ class Miner:
                 # act
                 res = subprocess.check_output([
                     self.salt_finder_path,
-                    '-nonce', str(user_nonce),
-                    '-diff', str(gem_difficulty),
-                    '-address', self.user_address,
-                    '-kind', str(self.gem_kind),
+                    '-user-nonce', str(user_nonce),
+                    '-user-address', self.user_address,
+                    '-chain-id', str(self.chain_id),
+                    '-gem-difficulty', str(gem_difficulty),
+                    '-gem-address', self.gem_address,
+                    '-gem-entropy', self.gem_entropy,
+                    '-gem-kind', str(self.gem_kind),
                     '-salt', str(salt),  # starter salt
                 ], universal_newlines=True, stderr=subprocess.STDOUT)
                 print("res", res)
