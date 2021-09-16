@@ -35,13 +35,13 @@ func main() {
 	}
 	flag.Parse()
 
-	userNonce := int64(*cPtr.userNonce)
-	userAddress := *cPtr.userAddress
-	chainId := int64(*cPtr.chainId)
+	userNonce := big.NewInt(int64(*cPtr.userNonce))
+	userAddress := common.HexToAddress(*cPtr.userAddress)
+	chainId := big.NewInt(int64(*cPtr.chainId))
 	gemDifficulty := big.NewInt(int64(*cPtr.gemDifficulty))
-	gemAddress := *cPtr.gemAddress
+	gemAddress := common.HexToAddress(*cPtr.gemAddress)
 	gemEntropy := *cPtr.gemEntropy
-	gemKind := int64(*cPtr.gemKind)
+	gemKind := big.NewInt(int64(*cPtr.gemKind))
 	salt, _ := new(big.Int).SetString(*cPtr.saltStart, 10)
 	debug := *cPtr.debug
 
@@ -53,46 +53,26 @@ func main() {
 	// debug
 	if debug {
 		fmt.Printf("userNonce: %d\n", userNonce)
+		fmt.Printf("userAddress: %s\n", userAddress)
+		fmt.Printf("chainId: %d\n", chainId)
 		fmt.Printf("gemDifficulty: %d\n", gemDifficulty)
 		fmt.Printf("gemAddress: %s\n", gemAddress)
 		fmt.Printf("gemEntropy: %s\n", gemEntropy)
 		fmt.Printf("gemKind: %d\n", gemKind)
-		fmt.Printf("userAddress: %s\n", userAddress)
 		fmt.Printf("salt: %v\n", salt)
 	}
 
-	total := 0
 	for true {
 		hash := solsha3.SoliditySHA3(
-			// types
 			[]string{"uint256", "bytes32", "address", "address", "uint256", "uint256", "uint256"},
-
-			// values
-			[]interface{}{
-				chainId,
-				"0x000080440000047163a56455ac4bc6b1f1b88efadf17db76e5c52c0ca594fd9b", // gem entropy
-				common.HexToAddress("0x342EbF0A5ceC4404CcFF73a40f9c30288Fc72611"),    // gem address
-				common.HexToAddress(userAddress),                                     // user_address
-				big.NewInt(gemKind),
-				big.NewInt(userNonce),
-				salt,
-			},
+			[]interface{}{chainId, gemEntropy, gemAddress, userAddress, gemKind, userNonce, salt},
 		)
 
-		total += 1
-
 		var luck = new(big.Int).SetBytes(hash)
-		//if luck.Cmp(target) != 1 {
-		//	fmt.Println(salt)
-		//	break
-		//}
-
-		if total >= 10000 {
-			fmt.Println(luck)
-			fmt.Println(target)
+		if luck.Cmp(target) != 1 {
+			fmt.Println(salt)
 			break
 		}
-
 		salt.Add(salt, plus)
 	}
 }
