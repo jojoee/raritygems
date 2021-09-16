@@ -1,5 +1,6 @@
 import subprocess
 import random
+import sys
 from time import sleep
 import traceback
 from web3 import Web3, contract
@@ -105,6 +106,8 @@ class Miner:
                 msg = '🎉 Gem found %s' % str(d)
                 line(self.line_token, msg)
                 print(msg)
+                if not self.private_key:
+                    sys.exit()
                 self.sign_transaction(target_salt)
 
                 # TODO: get tx status before go next loop (success or fail)
