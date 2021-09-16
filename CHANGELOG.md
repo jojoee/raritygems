@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2021-09-16)
+### Feature
+* **privatekey:** Force exit when found a salt if not provide a private key ([`747e7f3`](https://github.com/jojoee/raritygems/commit/747e7f382d92d46399a6deb5057ff3c4532b1627))
+
+### Documentation
+* **install:** Install with latest version instead of specific version ([`e399446`](https://github.com/jojoee/raritygems/commit/e399446525eb383b53807e6f446c2f0a20c91505))
+* **readme:** Init readme doc ([`a3c5b24`](https://github.com/jojoee/raritygems/commit/a3c5b245e3aab6dd46f2386a7f751a63754c7126))
+
 ## v0.3.0 (2021-09-16)
 ### Feature
 * **autosign:** Display tx when claim a gem ([`1d5b249`](https://github.com/jojoee/raritygems/commit/1d5b24901bfab3c7142ed483abe90fe3ccd2ea4e))
