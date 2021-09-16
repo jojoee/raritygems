@@ -18,7 +18,7 @@
 
 ```
 !pip install web3==5.23.0
-!pip install raritygems==0.3.0
+!pip install raritygems
 ```
 
 3. Download [salt_finder](https://github.com/jojoee/raritygems#salt_finder) and give it permission per execute
