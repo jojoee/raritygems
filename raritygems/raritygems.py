@@ -61,6 +61,7 @@ class Miner:
         print('transaction', transaction)
         print('txn_hash', tx_hash)
         print('tx_receipt', tx_receipt)
+        print("tx_receipt['transactionHash']", tx_receipt['transactionHash'].hex())
 
     def mine(self):
         msg = '🕒 Start mining'
