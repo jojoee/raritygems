@@ -134,6 +134,7 @@ vendor
 # project
 tmp.go
 tmp.py
+example.py
 exclude
 main
 raritygems_salt_finder
