@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2021-09-16)
+### Fix
+* **helper:** ModuleNotFoundError: No module named 'helper' ([`c5c4c9f`](https://github.com/jojoee/raritygems/commit/c5c4c9f89608bd8dd26d2da127518a3944d93638))
+
 ## v0.2.0 (2021-09-16)
 ### Feature
 * **raritygems:** Integrate with salt_finder ([`1cf9deb`](https://github.com/jojoee/raritygems/commit/1cf9deb5f6ddf507d099365505b82381ef3a220b))
