@@ -1,1 +1,2 @@
-from raritygems.raritygems import Miner
+from raritygems import *
+from raritygems.helper import *

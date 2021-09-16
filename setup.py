@@ -24,7 +24,10 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["raritygems"],
+    packages=[
+        "raritygems",
+        "raritygems.helper"
+    ],
     include_package_data=False,
     install_requires=[
 

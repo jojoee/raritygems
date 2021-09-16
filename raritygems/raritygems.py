@@ -3,8 +3,8 @@ import random
 from time import sleep
 import traceback
 from web3 import Web3, contract
-from helper.config import FTM_GEM_ABI
-from helper.notification import line
+from raritygems.helper.config import FTM_GEM_ABI
+from raritygems.helper.notification import line
 
 
 class Miner:
