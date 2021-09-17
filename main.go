@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	solsha3 "github.com/miguelmota/go-solidity-sha3"
 	"math/big"
+	"time"
 )
 
 type ConfigPtr struct {
@@ -54,6 +55,7 @@ func main() {
 	plus := big.NewInt(1)
 	max, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10)
 	target := new(big.Int).Div(max, gemDifficulty)
+	start := time.Now().UnixNano()
 
 	// debug
 	if debug {
@@ -89,6 +91,15 @@ func main() {
 			fmt.Print(-1)
 			break
 		}
+
+		// debug
+		if debug {
+			now := time.Now().UnixNano()
+			secs := (now-start)/1e9 + 1
+			fmt.Printf("\rtotal hashes %d in %d secs, hashes per second : %d", total, secs, total/secs)
+		}
+
+		// next
 		salt.Add(salt, plus)
 	}
 }
