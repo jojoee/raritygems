@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2021-09-17)
+### Feature
+* **performance:** And "iterations per second" text when run it in debug mode ([`19465f1`](https://github.com/jojoee/raritygems/commit/19465f14a982309d5dc5fc884057809efc9c8831))
+* **restart:** The process will restart every ~2 hrs to update the gem value ([`66d9b92`](https://github.com/jojoee/raritygems/commit/66d9b92155768550063c4233bddc8b7a9c1c3bc2))
+* **message:** Update notification message a bit ([`723a202`](https://github.com/jojoee/raritygems/commit/723a2027eb2d8dbfe96023e71c9ac7ad11ab5f36))
+
+### Documentation
+* **readme:** Update public "salt_finder" url and example of "salt_finder" cmd ([`fd45327`](https://github.com/jojoee/raritygems/commit/fd453276deda5b4e284a9fdbd95287488f9783c0))
+
 ## v0.4.0 (2021-09-16)
 ### Feature
 * **privatekey:** Force exit when found a salt if not provide a private key ([`747e7f3`](https://github.com/jojoee/raritygems/commit/747e7f382d92d46399a6deb5057ff3c4532b1627))
