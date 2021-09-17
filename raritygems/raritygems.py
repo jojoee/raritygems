@@ -81,8 +81,7 @@ class Miner:
                     'user_nonce': user_nonce,
                     'salt': salt,
                 }
-                msg = '\n========================\n' + \
-                      '💡start next loop %s' % str(d)
+                msg = '💡start next loop %s' % str(d)
                 print(msg)
                 line(self.line_token, msg)
 
