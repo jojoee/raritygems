@@ -18,10 +18,12 @@ type ConfigPtr struct {
 	gemKind       *int
 	saltStart     *string
 	debug         *bool
+	n             *int
 }
 
 func main() {
 	// flag
+	var defaultN = 25000 * 60 * 60 * 2 // !2 hrs
 	var cPtr = ConfigPtr{
 		flag.Int("user-nonce", 0, "User nonce"),
 		flag.String("user-address", "0xxxx", "User Fantom wallet address"),
@@ -32,6 +34,7 @@ func main() {
 		flag.Int("gem-kind", 0, "Gem kind"),
 		flag.String("salt", "2300000", "Starter salt"),
 		flag.Bool("debug", false, "Is debug version"),
+		flag.Int("n", defaultN, "max number of iterations"), // default ~2 hrs
 	}
 	flag.Parse()
 
@@ -44,8 +47,10 @@ func main() {
 	gemKind := big.NewInt(int64(*cPtr.gemKind))
 	salt, _ := new(big.Int).SetString(*cPtr.saltStart, 10)
 	debug := *cPtr.debug
+	n := int64(*cPtr.n)
 
 	// const
+	total := int64(0)
 	plus := big.NewInt(1)
 	max, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10)
 	target := new(big.Int).Div(max, gemDifficulty)
@@ -60,9 +65,14 @@ func main() {
 		fmt.Printf("gemEntropy: %s\n", gemEntropy)
 		fmt.Printf("gemKind: %d\n", gemKind)
 		fmt.Printf("salt: %v\n", salt)
+		fmt.Printf("n: %d\n", n)
 	}
 
 	for true {
+		// init
+		total += 1
+
+		// process
 		hash := solsha3.SoliditySHA3(
 			[]string{"uint256", "bytes32", "address", "address", "uint256", "uint256", "uint256"},
 			[]interface{}{chainId, gemEntropy, gemAddress, userAddress, gemKind, userNonce, salt},
@@ -71,6 +81,12 @@ func main() {
 		var luck = new(big.Int).SetBytes(hash)
 		if luck.Cmp(target) != 1 {
 			fmt.Print(salt)
+			break
+		}
+
+		// restart
+		if total >= n {
+			fmt.Print(-1)
 			break
 		}
 		salt.Add(salt, plus)

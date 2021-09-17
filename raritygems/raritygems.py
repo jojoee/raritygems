@@ -103,15 +103,20 @@ class Miner:
                 target_salt = int(res)
                 d['salt'] = target_salt
                 msg = '🎉 Gem found %s' % str(d)
-                line(self.line_token, msg)
-                print(msg)
-                if not self.private_key:
-                    sys.exit()
-                self.sign_transaction(target_salt)
 
-                # TODO: get tx status before go next loop (success or fail)
-                print('you are tired for mint one sleep for 16 secs')
-                sleep(16)  # sleep 16 second before get new loop
+                if target_salt == -1:
+                    # just restart or update the data
+                    print('🔄 update the value')
+                else:
+                    line(self.line_token, msg)
+                    print(msg)
+                    if not self.private_key:
+                        sys.exit()
+                    self.sign_transaction(target_salt)
+
+                    # TODO: get tx status before go next loop (success or fail)
+                    print('you are tired for mint one sleep for 16 secs')
+                    sleep(16)  # sleep 16 second before get new loop
 
             except Exception as e:
                 line(self.line_token, '🔥🔥🔥🔥🔥🔥🔥🔥\n ERROR %s' % str(e))
