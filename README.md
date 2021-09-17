@@ -24,7 +24,7 @@
 3. Download [salt_finder](https://github.com/jojoee/raritygems#salt_finder) and give it permission per execute
 
 ```
-!wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1K5yX7mbIhTg3jKlJMDcrgcY6rAgGeDQO' -O raritygems_salt_finder
+!wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=10K-ZTxj14_BrY_ZxupvOkGXYl2Eo9mEq' -O raritygems_salt_finder
 !chmod 755 raritygems_salt_finder
 ```
 
@@ -116,6 +116,7 @@ go run main.go \
     -gem-entropy=0x000080440000047163a56455ac4bc6b1f1b88efadf17db76e5c52c0ca594fd9b \
     -gem-kind=0 \
     -salt=41543544848 \
+    -n=800000 \
     -debug=true
 ```
 
