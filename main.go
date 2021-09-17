@@ -70,7 +70,7 @@ func main() {
 
 		var luck = new(big.Int).SetBytes(hash)
 		if luck.Cmp(target) != 1 {
-			fmt.Println(salt)
+			fmt.Print(salt)
 			break
 		}
 		salt.Add(salt, plus)

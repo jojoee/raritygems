@@ -100,7 +100,7 @@ class Miner:
                 print("res", res)
 
                 # sign
-                target_salt = int(res[:-1])
+                target_salt = int(res)
                 d['salt'] = target_salt
                 msg = '🎉 Gem found %s' % str(d)
                 line(self.line_token, msg)
