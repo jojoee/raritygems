@@ -50,30 +50,23 @@ You can check more about gem kind [here](https://github.com/jojoee/raritygems/bl
 It basically finds a "salt" and sign a transaction for you. The program will do the following
 
 1. Get the information that needed for mining: `user_nonce` and `gem_difficulty`
-2. Use [salt_finder](https://github.com/jojoee/raritygems#salt_finder) to find a salt
+2. Use [raritygems_salt_finder](https://github.com/jojoee/raritygems#raritygems_salt_finder) to find a salt
 3. Sign a transaction to claim a gem
 4. Go back to step 1.
 
-## salt_finder
+## raritygems_salt_finder
 
-At first, I start with Python and try to optimize it but I realize Go is must faster. The below is what I have tried
-roughly on my local machine.
-
-| Project | Language | Iterations per sec |
-| --- | --- | --- |
-| [Provably-Rare-Gem-Miner](https://github.com/yoyoismee/Provably-Rare-Gem-Miner) | Python | 2k |
-| [ramen](https://github.com/dmptrluke/ramen) | JavaScript | 20k |
-| [GemMiner-Go](https://github.com/TkzcM/GemMiner-Go) | Go | 30k |
-| [go-gem-miner](https://github.com/sorawit/go-gem-miner) | Go | 40k |
-
-So, I write this "salt_finder" part with Go language instead, and this is command I used to built it.
+At first, I start with Python and try to optimize it but I realize Go is must faster.
+So, I write this "raritygems_salt_finder" part with Go language instead, and this is command I used to built it.
 
 ```
-# to build "salt_finder"
+# to build "raritygems_salt_finder"
 go build -o raritygems_salt_finder main.go
+go build -o raritygems_salt_finder-0.5.0 main.go
 
-# to build "salt_finder" for Google Colab
+# to build "raritygems_salt_finder" for Google Colab
 GOOS=linux GOARCH=amd64 go build -o raritygems_salt_finder_linux main.go
+GOOS=linux GOARCH=amd64 go build -o raritygems_salt_finder_linux-0.5.0 main.go
 ```
 
 ## Feature
