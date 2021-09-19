@@ -120,6 +120,11 @@ go run main.go \
     -debug=true
 ```
 
-## Ref
+## Other projects
+- [Provably-Rare-Gem-Miner](https://github.com/yoyoismee/Provably-Rare-Gem-Miner)
+- [ramen](https://github.com/dmptrluke/ramen)
+- [GemMiner-Go](https://github.com/TkzcM/GemMiner-Go)
+- [go-gem-miner](https://github.com/sorawit/go-gem-miner)
 
+## Ref
 - [Provably Rare Gem Raritygems](https://gems.alphafinance.io/#/rarity)
