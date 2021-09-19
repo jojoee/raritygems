@@ -6,31 +6,23 @@
 
 [Provably Rare Gem Raritygems](https://gems.alphafinance.io/#/rarity) API, currently focused on mining.
 
-## Usage on Google Colab
+## Run on Google Colab
 
-1. Reinstall jsonschema, cause of the conflict with the Python library `web3`
-
-```
-!pip install --force-reinstall jsonschema==3.2.0
-```
-
-2. Install packages
-
-```
+```bash
+# 1. Install packages
+# !pip install --force-reinstall jsonschema==3.2.0
+!python --version
+!python -m pip --version
 !pip install web3==5.23.0
-!pip install raritygems
-```
+!pip install raritygems==0.5.0
 
-3. Download [salt_finder](https://github.com/jojoee/raritygems#salt_finder) and give it permission per execute
-
-```
+# 2. Download "raritygems_salt_finder" and give permission to execute
 !wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=10K-ZTxj14_BrY_ZxupvOkGXYl2Eo9mEq' -O raritygems_salt_finder
 !chmod 755 raritygems_salt_finder
 ```
 
-4. Run with Python
-
 ```python
+# 3. Run with Python
 from raritygems import raritygems
 
 david = raritygems.Miner(
@@ -43,7 +35,10 @@ david = raritygems.Miner(
 david.mine()
 ```
 
-You can check more about gem kind [here](https://github.com/jojoee/raritygems/blob/master/raritygems/helper/config.py)
+note
+- If you got "jsonschema" error then click "Runtime > Restart and run all".
+- "raritygems_salt_finder" is built by golang code that can be found here https://github.com/jojoee/raritygems/blob/master/main.go
+- You can check more about gem kind [here](https://github.com/jojoee/raritygems/blob/master/raritygems/helper/config.py)
 
 ## How it works?
 
