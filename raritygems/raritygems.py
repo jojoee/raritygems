@@ -2,6 +2,7 @@ import subprocess
 import random
 import sys
 from time import sleep
+from timeit import default_timer as timer
 import traceback
 from web3 import Web3, contract
 from raritygems.helper.config import FTM_GEM_ABI
@@ -63,6 +64,28 @@ class Miner:
         print('txn_hash', tx_hash)
         print('tx_receipt', tx_receipt)
         print("tx_receipt['transactionHash']", tx_receipt['transactionHash'].hex())
+
+    def test_hash_rate(self, n: int = 100000):
+        salt = random.randint(1, 2 ** 256)
+        gem_difficulty: int = self.gem_contract.functions.gems(5).call()[3]  # TODO: fix
+        user_nonce: int = 10000  # TODO: fix
+        start = timer()
+        res = subprocess.check_output([
+            self.salt_finder_path,
+            '-user-nonce', str(user_nonce),
+            '-user-address', self.user_address,
+            '-chain-id', str(self.chain_id),
+            '-gem-difficulty', str(gem_difficulty),
+            '-gem-address', self.gem_address,
+            '-gem-entropy', self.gem_entropy,
+            '-gem-kind', str(self.gem_kind),
+            '-salt', str(salt),
+            '-n', str(n),
+        ], universal_newlines=True, stderr=subprocess.STDOUT)
+        end = timer()
+        s = end - start
+        print(res)
+        print("%d hashes in %.2f seconds (hashes per second: %.2f)" % (n, s, (n / s)))
 
     def mine(self, n: int = 25000 * 60 * 60 * 2):
         """
