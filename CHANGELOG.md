@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2021-09-20)
+### Feature
+* **test_hash_rate:** Add function to test hash rate of "salt_finder" ([`068b30d`](https://github.com/jojoee/raritygems/commit/068b30d6643801f892ddfadaa90d39ef8911a4e0))
+* **mine:** Add parameter n to control number of iterations that will be restarted ([`5e2d1d7`](https://github.com/jojoee/raritygems/commit/5e2d1d7b35720f09fb6b640a25483557ddaab89f))
+
+### Documentation
+* **readme:** Update and replace "Usage on Google Colab" with "Run on Google Colab" section ([`83bd5b6`](https://github.com/jojoee/raritygems/commit/83bd5b671d7dbb3f68a37a8d92e72bda60f2673f))
+* **readme:** Update "raritygems_salt_finder" section ([`adef60b`](https://github.com/jojoee/raritygems/commit/adef60ba902a72f3dec96cdaa2e8243590e4e933))
+* **readme:** Add "Other projects" section into readme.md ([`56c7ae0`](https://github.com/jojoee/raritygems/commit/56c7ae084cc5bf0e4bf986075ff27f4a8e722c81))
+
 ## v0.5.0 (2021-09-17)
 ### Feature
 * **performance:** And "iterations per second" text when run it in debug mode ([`19465f1`](https://github.com/jojoee/raritygems/commit/19465f14a982309d5dc5fc884057809efc9c8831))
