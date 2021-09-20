@@ -64,7 +64,11 @@ class Miner:
         print('tx_receipt', tx_receipt)
         print("tx_receipt['transactionHash']", tx_receipt['transactionHash'].hex())
 
-    def mine(self):
+    def mine(self, n: int = 25000 * 60 * 60 * 2):
+        """
+        :param n: restart every n iterations
+        :return:
+        """
         msg = '🕒 Start mining'
         print(msg)
 
@@ -96,6 +100,7 @@ class Miner:
                     '-gem-entropy', self.gem_entropy,
                     '-gem-kind', str(self.gem_kind),
                     '-salt', str(salt),  # starter salt
+                    '-n', str(n),
                 ], universal_newlines=True, stderr=subprocess.STDOUT)
                 print("res", res)
 
